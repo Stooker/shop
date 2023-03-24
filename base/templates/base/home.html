@@ -1,0 +1,5 @@
+{% for cat in categories %}
+
+<h1><a href="{% url 'products' cat.id %}"/>{{cat.name}}</h1>
+
+{% endfor %}
