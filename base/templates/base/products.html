@@ -1,6 +1,12 @@
+{% extends 'main.html' %}
+
+{% block content %}
 <h1>{{category.name}}</h1>
+<hr>
 {% for prod in products %}
 
-<h5>{{prod.name}}</h5>
+{{prod.name}} {{prod.quantity}}szt. <a href="{% url 'add_to_cart' prod.id %}">Add to cart</a><hr>
 
 {% endfor %}
+
+{% endblock content %}
