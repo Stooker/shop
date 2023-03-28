@@ -15,7 +15,7 @@ class Product(models.Model):
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
     price = models.FloatField()
     quantity = models.IntegerField()
-    picture = models.ImageField(null=True)
+    picture = models.ImageField(null=True, blank=True)
 
 
 class ProductCart(models.Model):

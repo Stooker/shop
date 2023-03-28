@@ -1,5 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
+from django.contrib import messages
+import base.models
 from .models import Category, Product
 # Create your views here.
 
@@ -14,8 +16,14 @@ def home(request):
 
 def products_of_category(request, pk):
 
-    products = Product.object.get(id=pk)
+    category = Category.objects.get(id=pk)
 
-    context = {'products':products}
+    try:
+        products = Product.objects.get(category=category)
+    except Product.DoesNotExist:
+        products = {}
+        messages.error(request, 'This category is empty')
 
-    return render(request, 'products.html')
+    context = {'category':category, 'products':products}
+
+    return render(request, 'base/products.html', context)
