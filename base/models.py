@@ -15,7 +15,7 @@ class Product(models.Model):
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
     price = models.FloatField()
     quantity = models.IntegerField()
-    picture = models.ImageField(null=True, blank=True)
+    picture = models.ImageField(null=True, blank=True, default="index.jpeg")
 
     def __str__(self):
         return self.name
@@ -33,7 +33,7 @@ class Cart(models.Model):
 class ProductCart(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    quantity = models.IntegerField(default=1)
+    quantity = models.IntegerField(default=0)
 
     def __str__(self):
         return f"{self.cart} {self.product}"

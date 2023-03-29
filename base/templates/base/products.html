@@ -1,12 +1,42 @@
 {% extends 'main.html' %}
 
 {% block content %}
-<h1>{{category.name}}</h1>
-<hr>
-{% for prod in products %}
+<style>
+    .main-container{
+        display: grid;
+        grid-template-columns: 1fr 6fr;
+    }
 
-{{prod.name}} {{prod.quantity}}szt. <a href="{% url 'add_to_cart' prod.id %}">Add to cart</a><hr>
+    .items-container{
+        display: grid;
+        grid-template-columns: 3fr 3fr 1fr;
+    }
 
-{% endfor %}
 
+
+</style>
+<div class="main-container">
+    <div>
+        {% include 'base/cat_menu_component.html' %}
+    </div>
+
+
+    <div>
+        <h1>{{category.name}}</h1>
+        <hr>
+        <div class="items-container">
+            {% for prod in products %}
+            <div>{{prod.name}} {{prod.quantity}}szt.</div>
+            <div><img src="{{prod.picture.url}}"/></div>
+            <form method="POST" action="{% url 'add_to_cart' prod.id %}">
+                {% csrf_token %}
+                <div><input type="number" value="1" id="quantity" name="quantity" min="1" max="10"></div>
+
+                <input class="btn btn-info" type="submit" value="Add to cart">
+            </form>
+            {% endfor %}
+        </div>
+    </div>
+</div>
 {% endblock content %}
+
