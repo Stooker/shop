@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.contrib.admin import ModelAdmin
 
 
 class Category(models.Model):
@@ -37,4 +38,8 @@ class ProductCart(models.Model):
 
     def __str__(self):
         return f"{self.cart} {self.product}"
+
+
+class ProductCartAdmin(ModelAdmin):
+    readonly_fields = ('id',)
 

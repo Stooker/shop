@@ -1,9 +1,19 @@
 @import url(https://fonts.googleapis.com/css?family=Roboto:300);
 
+
 .login-page {
   width: 360px;
   padding: 8% 0 0;
   margin: auto;
+}
+.main-container {
+        display: grid;
+        grid-template-columns: 1fr 6fr;
+}
+
+.items-container {
+        display: grid;
+        grid-template-columns: 3fr 3fr 1fr;
 }
 .form {
   position: relative;
@@ -95,4 +105,5 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
 

@@ -5,30 +5,76 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from .models import Category, Product, ProductCart, Cart
 from .forms import RegistrationForm
+from django.views.generic import ListView, DetailView, View, TemplateView
 
 
-def home(request):
-    categories = Category.objects.all()
-    context = {'categories': categories}
+class HomePage(ListView):
+    template_name = 'base/home.html'
+    context_object_name = 'categories'
+    model = Category
 
-    return render(request, 'base/home.html', context)
+
+class CategoryDetails(DetailView):
+    template_name = 'base/products.html'
+    context_object_name = 'category'
+    model = Category
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(CategoryDetails, self).get_context_data(*args, **kwargs)
+        categories = Category.objects.all()
+        products = Product.objects.filter(category=context['category'])
+
+        if len(products) == 0:
+            messages.error(self.request, 'This category is empty')
+
+        context['categories'] = categories
+        context['products'] = products
+
+        return context
 
 
-def products_of_category(request, pk):
-    categories = Category.objects.all()
-    category = Category.objects.get(id=pk)
-    products = Product.objects.filter(category=category)
+# class ProductsOfCat(TemplateView):
+#     template_name = 'base/products.html'
+#
+#     def get_context_data(self, **kwargs):
+#         context = super(ProductsOfCat, self).get_context_data(**kwargs)
+#         pk = self.kwargs['pk']
+#         context['categories'] = Category.objects.all()
+#         context['category'] = Category.objects.get(id=pk)
+#         context['products'] = Product.objects.filter(category=Category.objects.get(id=pk))
+#
+#         if len(context['products']) == 0:
+#             messages.error(self.request, 'This category is empty')
+#
+#         return context
 
-    if len(products) == 0:
-        messages.error(request, 'This category is empty')
+class CartView(ListView):
+    template_name = 'base/cart.html'
+    context_object_name = 'products'
+    model = ProductCart
 
-    # except:
-    #     products = {}
-    #     messages.error(request, 'This category is empty')
+    def get_cart(self):
+        try:
+            cart = Cart.objects.get(user=self.request.user)
+        except:
+            messages.error(self.request, "Your cart is empty")
+            return False
+        return cart
 
-    context = {'category': category, 'products': products, 'categories': categories}
+    def get_queryset(self):
+        cart = self.get_cart()
+        if cart:
+            qs = super().get_queryset()
+            return qs.filter(cart=cart)
 
-    return render(request, 'base/products.html', context)
+    def get_context_data(self, *args, **kwargs):
+        context = super(CartView, self).get_context_data(*args, **kwargs)
+        cart = self.get_cart()
+
+        if cart:
+            context["cart"] = cart
+        return context
+
 
 
 def user_cart(request):
@@ -91,20 +137,24 @@ def register(request):
 
 @login_required(login_url='login')
 def add_to_cart(request, pk):
-
     if request.method == 'POST':
         quantity = int(request.POST['quantity'])
-
+    print(f'added {pk}')
     cart, c_created = Cart.objects.get_or_create(user=request.user)
     product = Product.objects.get(id=pk)
     product_cart, pc_created = ProductCart.objects.get_or_create(cart=cart, product=product)
 
-
     product_cart.quantity += quantity
     product_cart.save()
-
-
-
-
     category = product.category.id
-    return products_of_category(request, category)
+    return redirect('products', category)
+
+
+@login_required(login_url='login')
+def delete_from_cart(request, pk):
+    if request.method == 'POST':
+        quantity = int(request.POST['quantity'])
+    product_cart = ProductCart.objects.get(id=pk)
+    product_cart.delete()
+
+    return redirect('cart')

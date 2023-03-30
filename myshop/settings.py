@@ -125,6 +125,8 @@ STATIC_URL = '/static/'
 
 MEDIA_URL = '/images/'
 
+# STATIC_ROOT = "/collectstatic"
+
 STATICFILES_DIRS = [
     BASE_DIR / 'static'
 ]

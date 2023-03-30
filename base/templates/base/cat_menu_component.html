@@ -1,6 +1,6 @@
 <ul class="list-group">
 {% for cat in categories %}
-    <li class="list-group-item bg-dark"><a href="{% url 'products' cat.id %}"><h5>{{cat.name}}</h5></a></li>
+    <li class="list-group-item bg-dark"><a href="{% url 'products' pk=cat.id %}"><h5>{{cat.name}}</h5></a></li>
 
 
 {% endfor %}
