@@ -9,16 +9,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Shop</title>
 </head>
-<body>
+<body onload="Toast();">
 {% include 'navbar.html' %}
 
 
 {% if messages %}
-<ul class="messages">
     {% for message in messages %}
-    {{ message }}
+    <div id="snackbar">{{ message }}</div>
     {% endfor %}
-</ul>
 {% endif %}
 
 

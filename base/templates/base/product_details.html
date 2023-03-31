@@ -1,0 +1,26 @@
+{% extends 'main.html' %}
+
+{% block content %}
+<div class="main-container">
+    <div>
+        {% include 'base/cat_menu_component.html' %}
+    </div>
+
+
+    <div>
+        <h1>{{ object.name}}</h1>
+        <hr>
+        <div class="items-container">
+            <div class="d-flex align-items-center"><img src="{{object.picture.url}}"/></div>
+            <div class="d-flex align-items-center">{{object.description}}</div>
+            <div class="d-flex align-items-center">
+            {{object.price}} $
+
+            </div>
+        </div>
+        <div class="p-5 d-flex">
+            <input type="button" class="btn btn-info flex-grow-1" value="Buy now!">
+        </div>
+    </div>
+</div>
+{% endblock content %}

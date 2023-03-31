@@ -1,3 +1,7 @@
-$('.message a').click(function(){
-   $('form').animate({height: "toggle", opacity: "toggle"}, "slow");
-});
+function Toast() {
+  var x = document.getElementById("snackbar");
+
+  x.className = "show";
+
+  setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+} 

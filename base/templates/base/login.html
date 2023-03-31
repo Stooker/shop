@@ -1,36 +1,11 @@
 {% extends 'main.html' %}
 
 {% block content %}
-{% if page == 'login' %}
-<!--<div class="row gy-5">-->
-<!--    <div class="col">-->
-
-<!--    </div>-->
-<!--    <div class="col">-->
-<!--        <form method="POST" action="">-->
-<!--            {% csrf_token %}-->
-
-<!--            <label>Username:</label>-->
-<!--            <input type="text" name="username" placeholder="Enter username"/>-->
-
-<!--            <label>Password:</label>-->
-<!--            <input type="password" name="password" placeholder="Enter password"/>-->
-
-<!--            <input type="submit" value="Login"/>-->
-<!--        </form>-->
-<!--        <p>Havent signed up yet?</p>-->
-<!--        <a href="{% url 'register' %}">Sign up</a>-->
-<!--    </div>-->
-<!--    <div class="col">-->
-
-<!--    </div>-->
-
-<!--</div>-->
 <div class="login-page">
-    <div class="form" >
+    <div class="form">
         <form class="login-form" method="POST" action="">
 
-        {% csrf_token %}
+            {% csrf_token %}
             <input type="text" name="username" placeholder="Username"/>
             <input type="password" name="password" placeholder="Password"/>
             <input type="submit" value="Login"/>
@@ -38,20 +13,5 @@
         </form>
     </div>
 </div>
-{% else %}
-<div class="login-page">
-    <div class="form" >
-        <form class="login-form" method="POST" action="">
-
-        {% csrf_token %}
-            {% for field in form %}
-            <input type="text" name="{{ field.name }}" placeholder="{{ field.label }}"/>
-            {% endfor %}
-            <input type="submit" value="Register"/>
-            <p class="message">Already registered? <a href="{% url 'login' %}">Login</a></p>
-        </form>
-    </div>
-</div>
-{% endif %}
 {% endblock content %}
 
