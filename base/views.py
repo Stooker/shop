@@ -1,3 +1,4 @@
+from django.db.models import Sum
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -7,6 +8,7 @@ from .models import Category, Product, ProductCart, Cart
 from .forms import RegistrationForm
 from django.contrib.auth.views import LoginView
 from django.views.generic import ListView, DetailView, RedirectView, FormView
+from .utils import add_to_cart
 
 
 class HomePage(ListView):
@@ -57,8 +59,9 @@ class CartView(ListView):
         cart = self.get_cart()
         if cart:
             qs = super().get_queryset().filter(cart=cart)
+            print(qs)
             for prod in qs:
-                self.summary += prod.product.price*prod.quantity
+                self.summary += prod.product.price * prod.quantity
                 print(prod.product.price)
 
             return qs
@@ -131,15 +134,16 @@ class AddToCart(LoginRequiredMixin, RedirectView):
     category = 0
 
     def post(self, request, **kwargs):
+        cart, _ = Cart.objects.get_or_create(user=self.request.user)
+
+
         quantity = int(self.request.POST['quantity'])
+
         pk = self.kwargs['pk']
-        cart, c_created = Cart.objects.get_or_create(user=self.request.user)
         product = Product.objects.get(id=pk)
-        product.quantity -= quantity
-        product.save()
-        product_cart, pc_created = ProductCart.objects.get_or_create(cart=cart, product=product)
-        product_cart.quantity += quantity
-        product_cart.save()
+
+        add_to_cart(product, quantity, cart)
+
         messages.success(request, "Succesfully added to cart!")
         self.category = product.category.id
         return super().post(request, **kwargs)
@@ -177,4 +181,3 @@ class ProductDetails(DetailView):
         context = super().get_context_data(**kwargs)
         context['categories'] = Category.objects.all()
         return context
-
