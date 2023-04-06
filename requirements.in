@@ -1,2 +1,5 @@
 django
 Pillow
+django-debug-toolbar
+djangorestframework
+django-filter

@@ -59,10 +59,13 @@ class CartView(ListView):
         cart = self.get_cart()
         if cart:
             qs = super().get_queryset().filter(cart=cart)
-            print(qs)
+            summary_n = ProductCart.objects.filter(cart=cart).aaggregate(Sum(int(float('product.price'))*'quantity'))
+            print(summary_n)
             for prod in qs:
+
                 self.summary += prod.product.price * prod.quantity
                 print(prod.product.price)
+
 
             return qs
 
@@ -136,16 +139,26 @@ class AddToCart(LoginRequiredMixin, RedirectView):
     def post(self, request, **kwargs):
         cart, _ = Cart.objects.get_or_create(user=self.request.user)
 
+        try:
+            quantity = int(self.request.POST['quantity'])
+            try:
+                pk = self.kwargs['pk']
+                product = Product.objects.get(id=pk)
+            except:
+                messages.error(request, "Error while choosing product")
+        except:
+            messages.error(request, "Error in quantity value")
 
-        quantity = int(self.request.POST['quantity'])
 
-        pk = self.kwargs['pk']
-        product = Product.objects.get(id=pk)
 
-        add_to_cart(product, quantity, cart)
+        try:
+            add_to_cart(product, quantity, cart)
+            messages.success(request, "Succesfully added to cart!")
+        except:
+            messages.error(request, "Error while adding to cart")
 
-        messages.success(request, "Succesfully added to cart!")
         self.category = product.category.id
+
         return super().post(request, **kwargs)
 
     def get_redirect_url(self, *args, **kwargs):
