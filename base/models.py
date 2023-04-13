@@ -6,6 +6,9 @@ from django.contrib.admin import ModelAdmin
 class Category(models.Model):
     name = models.CharField(max_length=200)
 
+    class Meta:
+        ordering = ['name']
+
     def __str__(self):
         return self.name
 
@@ -25,6 +28,7 @@ class Product(models.Model):
 class Cart(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     products = models.ManyToManyField(Product, through='ProductCart')
+
     # created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -42,4 +46,3 @@ class ProductCart(models.Model):
 
 class ProductCartAdmin(ModelAdmin):
     readonly_fields = ('id',)
-

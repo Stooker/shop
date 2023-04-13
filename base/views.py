@@ -9,6 +9,12 @@ from .forms import RegistrationForm
 from django.contrib.auth.views import LoginView
 from django.views.generic import ListView, DetailView, RedirectView, FormView
 from .utils import add_to_cart
+from .tasks import send_feedback_email_task
+from django.core.cache.backends.base import DEFAULT_TIMEOUT
+from django.conf import settings
+from django.views.decorators.cache import cache_page
+
+CACHE_TTL = getattr(settings, 'CACHE_TTL', DEFAULT_TIMEOUT)
 
 
 class HomePage(ListView):
@@ -26,6 +32,7 @@ class CategoryDetails(DetailView):
     template_name = 'base/products.html'
     context_object_name = 'category'
     model = Category
+
 
     def get_context_data(self, *args, **kwargs):
         context = super(CategoryDetails, self).get_context_data(*args, **kwargs)
@@ -59,13 +66,12 @@ class CartView(ListView):
         cart = self.get_cart()
         if cart:
             qs = super().get_queryset().filter(cart=cart)
-            summary_n = ProductCart.objects.filter(cart=cart).aaggregate(Sum(int(float('product.price'))*'quantity'))
-            print(summary_n)
+            # new = ProductCart.objects.filter(cart=cart).aggregate(Sum('quantity'))
+            # print(new)
+
             for prod in qs:
-
                 self.summary += prod.product.price * prod.quantity
-                print(prod.product.price)
-
+                # print(prod.product.price)
 
             return qs
 
@@ -149,11 +155,9 @@ class AddToCart(LoginRequiredMixin, RedirectView):
         except:
             messages.error(request, "Error in quantity value")
 
-
-
         try:
             add_to_cart(product, quantity, cart)
-            messages.success(request, "Succesfully added to cart!")
+            messages.success(request, "Successfully added to cart!")
         except:
             messages.error(request, "Error while adding to cart")
 
@@ -176,7 +180,7 @@ class DeleteFromCart(LoginRequiredMixin, RedirectView):
 
         product.quantity += quantity
         product.save()
-        messages.error(request, "Succesfully removed from cart")
+        messages.error(request, "Successfully removed from cart")
 
         product_cart.quantity -= quantity
         product_cart.save()
@@ -194,3 +198,11 @@ class ProductDetails(DetailView):
         context = super().get_context_data(**kwargs)
         context['categories'] = Category.objects.all()
         return context
+
+
+class MakeOrder(RedirectView):
+    url = '/'
+
+    def post(self, request, *args, **kwargs):
+        send_feedback_email_task.delay('support@example.com', 'cokolwiek', request.user.username)
+        return super().post(request, *args, **kwargs)

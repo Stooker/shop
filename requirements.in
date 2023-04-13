@@ -3,3 +3,6 @@ Pillow
 django-debug-toolbar
 djangorestframework
 django-filter
+django-cors-headers
+celery
+redis

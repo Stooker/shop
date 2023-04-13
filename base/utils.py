@@ -1,4 +1,5 @@
 from .models import Cart, ProductCart
+from time import sleep
 
 
 def add_to_cart(product, quantity, cart):
